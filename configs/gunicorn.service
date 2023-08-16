@@ -1,0 +1,13 @@
+[Unit]
+Description=BuddhaBroute app server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=buddhabroute
+WorkingDirectory=/opt/buddhabroute/Buddhabroute-server
+ExecStart=/opt/buddhabroute/Buddhabroute-server/bin/gunicorn -c configs/gunicorn.conf.py server:app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

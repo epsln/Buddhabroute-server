@@ -1,0 +1,6 @@
+*.swp
+*.swo
+*.png
+*.csv
+output/*
+__pycache__/
