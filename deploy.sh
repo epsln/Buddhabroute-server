@@ -3,9 +3,14 @@ handle_nginx() {
     echo 'checking for diff with nginx.conf...'
     if ! diff configs/nginx.conf /etc/nginx/nginx.conf; then
         while true; do
-            read -p "Do you wish to copy new file" yn
+            read -p "Do you wish to copy new file ? [y/n] >" yn
             case $yn in
-                [Yy]* ) cp configs/nginx.conf /etc/nginx/nginx.conf; nginx -s reload; break;;
+                [Yy]* ) 
+                    echo 'cp configs/nginx.conf /etc/nginx/nginx.conf';
+                    sudo cp configs/nginx.conf /etc/nginx/nginx.conf;
+                    echo 'nginx -s reload';
+                    sudo nginx -s reload;
+                    break;;
                 [Nn]* ) exit;;
                 * ) echo "Please answer yes or no.";;
             esac
@@ -19,9 +24,14 @@ handle_gunicorn() {
     echo 'checking for diff with gunicorn.service'
     if ! diff configs/gunicorn.service /etc/systemd/system/gunicorn.service; then
         while true; do
-            read -p "Do you wish to copy new file" yn
+            read -p "Do you wish to copy new file ? [y/n] >" yn
             case $yn in
-                [Yy]* ) cp configs/gunicorn.service /etc/systemd/system/gunicorn.service; systemctl daemon-reload && systemctl restart gunicorn.service; break;;
+                [Yy]* ) 
+                    echo 'cp configs/gunicorn.service /etc/systemd/system/gunicorn.service';
+                    sudo cp configs/gunicorn.service /etc/systemd/system/gunicorn.service;
+                    echo 'systemctl daemon-reload && sudo systemctl restart gunicorn.service';
+                    sudo systemctl daemon-reload && sudo systemctl restart gunicorn.service;
+                    break;;
                 [Nn]* ) exit;;
                 * ) echo "Please answer yes or no.";;
             esac
@@ -36,11 +46,9 @@ if [ $UID == 0 ] ; then
     exit
 fi
 
-cd /opt/buddhabroute/Buddhabroute-server/
 git branch
 echo 'pulling in 5 sec'
-sleep 5
+#sleep 5
 git pull
 handle_nginx
 handle_gunicorn
-systemctl  restart gunicorn.service
