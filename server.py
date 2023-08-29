@@ -3,14 +3,18 @@ import time
 import configparser, argparse
 import logging
 import sys
-from os import mkdir, getcwd
+from os import makedirs, getcwd
 from os.path import join
 from pathlib import Path
+
+import numpy as np
+import base64
 
 from flask import Flask, request, redirect, send_file
 from concurrent.futures import ThreadPoolExecutor
 from werkzeug.utils import secure_filename
 from apscheduler.schedulers.background import BackgroundScheduler
+
 
 from fractal import FractalManager
 
@@ -72,23 +76,21 @@ def check_app_status():
 def upload_checkpoint():
     """API endpoint to upload computed checkpoint by screensaver clients"""
     logger.debug(f'Request : {request.form}')
-    if request.method == 'POST':
-        if 'uuid' not in request.form or 'csv-content' not in request.files:
-            logger.debug(f'invalid request : .form')
-            return redirect('/', code=303)
-        files = dict(request.files)
-        logger.debug(f'{request.files}')
-        logger.debug(f'{files}')
-        #logger.debug(f'{csv-}')
-        f = files['csv-content']
-        logger.debug(f'{f}')
-        f.save(join(fractal_mgr.input_dir, f.filename))
-        #for f in files:
-        #    if f:
-        #        filename = secure_filename(f.filename)
-        #        logger.debug(f'{filename}')
-        #        f.save(join(fractal_mgr.output_dir, filename))
-    return redirect('/', code=200)
+    if 'uuid' not in request.json: #TODO: validate json against a format
+        logger.debug(f'invalid request : No uuid !')
+        return redirect('/', code=303)
+
+    histogram = np.frombuffer(base64.b64decode(request.json['histogram']),dtype=np.float64)
+    size = (int(request.json['shape'][0]), int(request.json['shape'][1]))
+    histogram = np.reshape(histogram, size)
+
+    #TODO: Change filename + create a saving method in case we need some processing e.g. quarantines
+    np.save(join(fractal_mgr.input_dir, str(time.time())), histogram)
+    if request.json['nickname'] is not "None":
+        username = request.json['nickname']
+    else:
+        username = ""
+    return {"message": f"Thanks ! {username} "}
 
 if __name__ == '__main__':
     args = get_args()
@@ -104,7 +106,7 @@ if __name__ == '__main__':
     logger.debug(f'Creating subdirs')
     for subdir in config['subdirs']:
         try:
-            mkdir(config['subdirs'][subdir])
+            makedirs(config['subdirs'][subdir], exist_ok = True)
             logger.debug(f'''subdir { subdir }: { config['subdirs'][subdir] } created''')
         except FileExistsError as e:
             logger.debug(f'''subdir { subdir }: { config['subdirs'][subdir] } already exists''')
