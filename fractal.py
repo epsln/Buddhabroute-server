@@ -3,6 +3,7 @@ from PIL import Image
 import numpy as np
 import pandas as pd
 from pandas.errors import EmptyDataError
+import tarfile
 
 import logging
 from os import listdir, mkdir, getcwd, remove
@@ -18,6 +19,7 @@ class FractalManager():
         self.output_size = output_size
         self.checkpoint_filename = checkpoint_filename
         self.output_filename = "histogram.png"
+        self.archive_filename = "histogram.png"
         self.max_val = 0
         if last_checkpoint is None:
             self.last_checkpoint = np.zeros(output_size)
@@ -28,7 +30,9 @@ class FractalManager():
         return np.load(join(self.fractal_output_dir, filename))
 
     def _save(self, filename):
+        with open
         np.save(join(self.checkpoint_output_dir, filename), self.last_checkpoint)
+
         return np.load(join(self.fractal_output_dir, filename))
 
     def smoothing_func(self, val, max_val):
@@ -58,10 +62,13 @@ class FractalManager():
                 files.append(histo)
             except EmptyDataError:
                 logger.debug(f'{input_file} is empty !')
+                remove(input_file)
                 continue
+            remove(input_file)
 
         for data in files:
            self._compute(data)
+
 
         self._output_image()
 
