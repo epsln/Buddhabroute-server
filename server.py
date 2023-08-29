@@ -8,6 +8,7 @@ from os.path import join
 from pathlib import Path
 
 import numpy as np
+import base64
 
 from flask import Flask, request, redirect, send_file
 from concurrent.futures import ThreadPoolExecutor
