@@ -3,14 +3,17 @@ import time
 import configparser, argparse
 import logging
 import sys
-from os import mkdir, getcwd
+from os import makedirs, getcwd
 from os.path import join
 from pathlib import Path
+
+import numpy as np
 
 from flask import Flask, request, redirect, send_file
 from concurrent.futures import ThreadPoolExecutor
 from werkzeug.utils import secure_filename
 from apscheduler.schedulers.background import BackgroundScheduler
+
 
 from fractal import FractalManager
 
@@ -102,7 +105,7 @@ if __name__ == '__main__':
     logger.debug(f'Creating subdirs')
     for subdir in config['subdirs']:
         try:
-            mkdir(config['subdirs'][subdir])
+            makedirs(config['subdirs'][subdir], exist_ok = True)
             logger.debug(f'''subdir { subdir }: { config['subdirs'][subdir] } created''')
         except FileExistsError as e:
             logger.debug(f'''subdir { subdir }: { config['subdirs'][subdir] } already exists''')
