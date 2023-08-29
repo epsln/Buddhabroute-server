@@ -37,7 +37,7 @@ class FractalManager():
     def _get_checkpoints_list(self):
         return [join(self.input_dir, f) for f in listdir(self.input_dir)
                 if isfile(join(self.input_dir, f)) and f.endswith(".npy")]
-    
+
     def compute_histograms(self):
         filename_list = self._get_checkpoints_list()
         logger.debug(f'compute histogram on files : { filename_list }')
@@ -55,19 +55,19 @@ class FractalManager():
                     logger.info(f'file {input_file} was non compliant')
                     continue
 
-                files.append(histo_df)
+                files.append(histo)
             except EmptyDataError:
                 logger.debug(f'{input_file} is empty !')
                 continue
 
-        for data in files: 
+        for data in files:
            self._compute(data)
 
         self._output_image()
 
 
     def _compute(self, histogram):
-        self.last_checkpoint = np.add(self.last_checkpoint, histogram.values)
+        self.last_checkpoint = np.add(self.last_checkpoint, histogram)
         self.max_val = np.log(np.max(self.last_checkpoint) + 1)
         logger.debug(f'{self.max_val}')
         self.last_checkpoint = self.smoothing_func(self.last_checkpoint, self.max_val)
@@ -103,7 +103,7 @@ class FractalManager():
 #            logger.debug(f'{max_val}')
 #
 #            remove(input_file)
-#        
+#
 #        self.last_checkpoint = self.smoothing_func(self.last_checkpoint, max_val)
 #
 #        output_img = Image.fromarray(self.last_checkpoint.astype(np.uint8))
