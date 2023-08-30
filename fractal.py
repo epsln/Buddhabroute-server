@@ -3,7 +3,6 @@ from PIL import Image
 import numpy as np
 import pandas as pd
 from pandas.errors import EmptyDataError
-import tarfile
 
 import logging
 from os import listdir, mkdir, getcwd, remove
@@ -30,7 +29,6 @@ class FractalManager():
         return np.load(join(self.fractal_output_dir, filename))
 
     def _save(self, filename):
-        with open
         np.save(join(self.checkpoint_output_dir, filename), self.last_checkpoint)
 
         return np.load(join(self.fractal_output_dir, filename))
