@@ -19,7 +19,7 @@ class FractalManager():
         self.checkpoint_filename = checkpoint_filename
         self.output_filename = "histogram.png"
         self.max_val = 0
-        if not os.path.isfile(join(self.fractal_output_dir, self.checkpoint_filename)):
+        if not isfile(join(self.fractal_output_dir, self.checkpoint_filename)):
             logger.info(f'Could not find last checkpoint {join(self.fractal_output_dir, self.checkpoint_filename)},'
                           'starting from scratch !')
             self.last_checkpoint = np.zeros(output_size)
