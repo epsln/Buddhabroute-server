@@ -11,7 +11,7 @@ from os.path import isfile, join
 logger = logging.getLogger("__name__")
 
 class FractalManager():
-    def __init__(self, input_dir, fractal_output_dir, checkpoint_output_dir, output_size, last_checkpoint = None, checkpoint_filename = 'last.npy'):
+    def __init__(self, input_dir, fractal_output_dir, checkpoint_output_dir, output_size, checkpoint_filename = 'last.npy'):
         self.input_dir = input_dir
         self.checkpoint_output_dir = checkpoint_output_dir
         self.fractal_output_dir = fractal_output_dir
@@ -19,17 +19,20 @@ class FractalManager():
         self.checkpoint_filename = checkpoint_filename
         self.output_filename = "histogram.png"
         self.max_val = 0
-        if last_checkpoint is None:
+        if not os.path.isfile(join(self.fractal_output_dir, self.checkpoint_filename)):
+            logger.info(f'Could not find last checkpoint {join(self.fractal_output_dir, self.checkpoint_filename)},'
+                          'starting from scratch !')
             self.last_checkpoint = np.zeros(output_size)
         else:
-            self.last_checkpoint = self._load(last_checkpoint)
+            logger.info(f'Loading last checkpoint: {join(self.fractal_output_dir, self.checkpoint_filename)}')
+            self.last_checkpoint = self._load(join(self.fractal_output_dir, self.checkpoint_filename))
 
     def _load(self, filename):
-        return np.load(join(self.fractal_output_dir, filename))
+        np.load(join(self.fractal_output_dir, filename))
 
     def _save(self, filename):
-        np.save(join(self.checkpoint_output_dir, filename), self.last_checkpoint)
-        return np.load(join(self.fractal_output_dir, filename))
+        logger.info(f'Saving last checkpoint: {join(self.fractal_output_dir, self.checkpoint_filename)}')
+        np.save(join(self.checkpoint_output_dir, self.checkpoint_filename), self.last_checkpoint)
 
     def smoothing_func(self, val, max_val):
         return np.log(val + 1)/max_val * 255
