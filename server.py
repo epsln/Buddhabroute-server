@@ -76,18 +76,19 @@ def check_app_status():
 def upload_checkpoint():
     """API endpoint to upload computed checkpoint by screensaver clients"""
     logger.debug(f'Request : {request.form}')
-    if 'uuid' not in request.json: #TODO: validate json against a format
+    data = json.load(zlib.decompress(request.data))
+    if 'uuid' not in data: #TODO: validate json against a format
         logger.debug(f'invalid request : No uuid !')
         return redirect('/', code=303)
 
-    histogram = np.frombuffer(base64.b64decode(request.json['histogram']),dtype=np.float64)
-    size = (int(request.json['shape'][0]), int(request.json['shape'][1]))
+    histogram = np.frombuffer(base64.b64decode(data['histogram']),dtype=np.float64)
+    size = (int(request.json['shape'][0]), int(data['shape'][1]))
     histogram = np.reshape(histogram, size)
 
     #TODO: Change filename + create a saving method in case we need some processing e.g. quarantines
     np.save(join(fractal_mgr.input_dir, str(time.time())), histogram)
-    if request.json['nickname'] is not "None":
-        username = request.json['nickname']
+    if data['nickname'] is not "None":
+        username = data['nickname']
     else:
         username = ""
     return {"message": f"Thanks ! {username} "}
