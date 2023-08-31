@@ -65,8 +65,6 @@ class FractalManager():
                 logger.debug(f'{input_file} is empty !')
                 remove(input_file)
                 continue
-        
-        remove(input_file)
 
             remove(input_file)
 
