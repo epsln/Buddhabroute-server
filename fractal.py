@@ -82,39 +82,7 @@ class FractalManager():
         self.last_checkpoint = self.smoothing_func(self.last_checkpoint, self.max_val)
 
     def _output_image(self):
+        logger.debug(f'Saving output image at {join(self.fractal_output_dir, self.output_filename)}')
         output_img = Image.fromarray(self.last_checkpoint.astype(np.uint8))
         output_img.convert("L")
         output_img.save(join(self.fractal_output_dir, self.output_filename))
-
-#    def compute_histograms(self):
-#        filename_list = self._get_checkpoints_list()
-#        logger.debug(f'compute histogram on files : { filename_list }')
-#        if type(filename_list) is list and len(filename_list) == 0:
-#            logger.debug(f'no files to compute')
-#            return
-#
-#        max_val = 0
-#        for input_file in filename_list:
-#            try:
-#                logger.debug(f'opening {input_file}')
-#                histo_df = pd.read_csv(input_file)
-#            except EmptyDataError:
-#                logger.debug(f'{input_file} is empty !')
-#                continue
-#
-#            if histo_df.shape != self.output_size:
-#                remove(input_file)
-#                logger.info(f'file {input_file} was non compliant and removed')
-#                continue
-#
-#            self.last_checkpoint = np.add(self.last_checkpoint, histo_df.values)
-#            max_val = np.log(np.max(self.last_checkpoint) + 1)
-#            logger.debug(f'{max_val}')
-#
-#            remove(input_file)
-#
-#        self.last_checkpoint = self.smoothing_func(self.last_checkpoint, max_val)
-#
-#        output_img = Image.fromarray(self.last_checkpoint.astype(np.uint8))
-#        output_img.convert("L")
-#        output_img.save(join(self.fractal_output_dir, self.output_filename))
