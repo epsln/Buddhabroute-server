@@ -26,7 +26,7 @@ class FractalManager():
             self.last_checkpoint = np.zeros(output_size)
         else:
             logger.info(f'Loading last checkpoint: {join(self.checkpoint_output_dir, self.checkpoint_filename)}')
-            self.last_checkpoint = self._load(join(self.fractal_output_dir, self.checkpoint_filename))
+            self.last_checkpoint = self._load(join(self.checkpoint_output_dir, self.checkpoint_filename))
 
     def _load(self, filename):
         return np.load(join(self.checkpoint_output_dir, filename))
