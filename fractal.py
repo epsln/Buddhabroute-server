@@ -20,16 +20,16 @@ class FractalManager():
         self.output_filename = "histogram.png"
         self.archive_filename = "histogram.png"
         self.max_val = 0
-        if not isfile(join(self.fractal_output_dir, self.checkpoint_filename)):
-            logger.info(f'Could not find last checkpoint {join(self.fractal_output_dir, self.checkpoint_filename)},'
+        if not isfile(join(self.checkpoint_output_dir, self.checkpoint_filename)):
+            logger.info(f'Could not find last checkpoint {join(self.checkpoint_output_dir, self.checkpoint_filename)},'
                           'starting from scratch !')
             self.last_checkpoint = np.zeros(output_size)
         else:
-            logger.info(f'Loading last checkpoint: {join(self.fractal_output_dir, self.checkpoint_filename)}')
+            logger.info(f'Loading last checkpoint: {join(self.checkpoint_output_dir, self.checkpoint_filename)}')
             self.last_checkpoint = self._load(join(self.fractal_output_dir, self.checkpoint_filename))
 
     def _load(self, filename):
-        return np.load(join(self.fractal_output_dir, filename))
+        return np.load(join(self.checkpoint_output_dir, filename))
 
     def save(self):
         logger.info(f'Saving last checkpoint: {join(self.fractal_output_dir, self.checkpoint_filename)}')
