@@ -28,11 +28,11 @@ class FractalManager():
             self.last_checkpoint = self._load(join(self.fractal_output_dir, self.checkpoint_filename))
 
     def _load(self, filename):
-        np.load(join(self.fractal_output_dir, filename))
+        return np.load(join(self.fractal_output_dir, filename))
 
     def _save(self, filename):
         logger.info(f'Saving last checkpoint: {join(self.fractal_output_dir, self.checkpoint_filename)}')
-        np.save(join(self.checkpoint_output_dir, self.checkpoint_filename), self.last_checkpoint)
+        return np.save(join(self.checkpoint_output_dir, self.checkpoint_filename), self.last_checkpoint)
 
     def smoothing_func(self, val, max_val):
         return np.log(val + 1)/max_val * 255
