@@ -30,7 +30,7 @@ class FractalManager():
     def _load(self, filename):
         return np.load(join(self.fractal_output_dir, filename))
 
-    def _save(self, filename):
+    def save(self):
         logger.info(f'Saving last checkpoint: {join(self.fractal_output_dir, self.checkpoint_filename)}')
         return np.save(join(self.checkpoint_output_dir, self.checkpoint_filename), self.last_checkpoint)
 

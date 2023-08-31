@@ -126,6 +126,7 @@ if __name__ == '__main__':
 
     scheduler = BackgroundScheduler()
     scheduler.add_job(func=fractal_mgr.compute_histograms, trigger="interval", seconds=30)
+    scheduler.add_job(func=fractal_mgr.save, trigger="interval", seconds=30)
     scheduler.start()
 
     app.run(debug=args.debug, port=8000)
