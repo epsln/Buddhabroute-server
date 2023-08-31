@@ -61,9 +61,11 @@ class FractalManager():
 
                 files.append(histo)
             except EmptyDataError:
+                remove(input_file)
                 logger.debug(f'{input_file} is empty !')
                 remove(input_file)
                 continue
+
             remove(input_file)
 
         for data in files:
