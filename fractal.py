@@ -58,10 +58,13 @@ class FractalManager():
                     logger.info(f'file {input_file} was non compliant')
                     continue
 
-                files.append(histo_df)
+                files.append(histo)
             except EmptyDataError:
+                remove(input_file)
                 logger.debug(f'{input_file} is empty !')
                 continue
+        
+        remove(input_file)
 
         for data in files: 
            self._compute(data)
