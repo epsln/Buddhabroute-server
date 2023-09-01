@@ -71,18 +71,15 @@ class FractalManager():
         for data in files:
            self._compute(data)
 
-
         self._output_image()
-
 
     def _compute(self, histogram):
         self.last_checkpoint = np.add(self.last_checkpoint, histogram)
-        self.max_val = np.log(np.max(self.last_checkpoint) + 1)
-        logger.debug(f'{self.max_val}')
-        self.last_checkpoint = self.smoothing_func(self.last_checkpoint, self.max_val)
 
     def _output_image(self):
         logger.debug(f'Saving output image at {join(self.fractal_output_dir, self.output_filename)}')
-        output_img = Image.fromarray(self.last_checkpoint.astype(np.uint8))
+        max_val = np.log(np.max(self.last_checkpoint) + 1)
+        out_array = self.smoothing_func(self.last_checkpoint, self.max_val)
+        output_img = Image.fromarray(out_array.astype(np.uint8))
         output_img.convert("L")
         output_img.save(join(self.fractal_output_dir, self.output_filename))
