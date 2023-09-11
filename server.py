@@ -81,8 +81,16 @@ def upload_checkpoint():
         logger.debug(f'invalid request : No uuid !')
         return redirect('/', code=303)
 
-    histogram = np.frombuffer(base64.b64decode(data['histogram']),dtype=np.float64)
-    size = (int(request.json['shape'][0]), int(data['shape'][1]))
+    # with decompression to go with client side compression
+    histogram = np.frombuffer(
+        base64.b64decode(
+            zlib.decompress(
+                request.json['histogram']
+            )
+        ),
+        dtype=np.float64
+    )
+    size = (int(request.json['shape'][0]), int(request.json['shape'][1]))
     histogram = np.reshape(histogram, size)
 
     #TODO: Change filename + create a saving method in case we need some processing e.g. quarantines
