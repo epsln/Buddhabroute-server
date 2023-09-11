@@ -9,6 +9,7 @@ from pathlib import Path
 
 import numpy as np
 import base64
+import zlib
 
 from flask import Flask, request, redirect, send_file
 from concurrent.futures import ThreadPoolExecutor
@@ -129,7 +130,7 @@ if __name__ == '__main__':
         input_dir = config['subdirs']['checkpointdir'], 
         fractal_output_dir = config['subdirs']['fractal_outputdir'], 
         checkpoint_output_dir = config['subdirs']['checkpoint_outputdir'], 
-        output_size = (7105, 4960)
+        output_size = (7106, 4960)
     )
     last_compute_time = time.time()
 
