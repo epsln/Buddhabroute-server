@@ -77,15 +77,14 @@ def check_app_status():
 def upload_checkpoint():
     """API endpoint to upload computed checkpoint by screensaver clients"""
     logger.debug(f'Request : {request.form}')
-    data = json.load(zlib.decompress(request.data))
-    if 'uuid' not in data: #TODO: validate json against a format
+    if 'uuid' not in request.json: #TODO: validate json against a format
         logger.debug(f'invalid request : No uuid !')
         return redirect('/', code=303)
 
     # with decompression to go with client side compression
     histogram = np.frombuffer(
-        base64.b64decode(
-            zlib.decompress(
+        zlib.decompress(
+            base64.b64decode(
                 request.json['histogram']
             )
         ),
