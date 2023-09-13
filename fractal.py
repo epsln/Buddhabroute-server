@@ -34,9 +34,9 @@ class FractalManager():
         return np.load(join(self.checkpoint_output_dir, filename))
 
     def save_checkpoint(self):
-        logger.info(f'Renaming last checkpoint: {join(self.fractal_output_dir, "old.npy")}')
-        rename(join(self.checkpoint_output_dir, self.checkpoint_filename), join(self.fractal_output_dir, "old.npy"))
-        logger.info(f'Saving last checkpoint: {join(self.fractal_output_dir, self.checkpoint_filename)}')
+        logger.info(f'Renaming last checkpoint: {join(self.checkpoint_output_dir, "old.npy")}')
+        rename(join(self.checkpoint_output_dir, self.checkpoint_filename), join(self.checkpoint_output_dir, "old.npy"))
+        logger.info(f'Saving last checkpoint: {join(self.checkpoint_output_dir, self.checkpoint_filename)}')
         return np.save(join(self.checkpoint_output_dir, self.checkpoint_filename), self.last_checkpoint)
 
     def smoothing_func(self, val, max_val):
