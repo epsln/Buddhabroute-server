@@ -125,6 +125,10 @@ if __name__ == '__main__':
     executor = ThreadPoolExecutor(
         int(config['server']['worker'])
     )
+    stats_mgr = StatsManager(
+        db_path = config['db_path'],
+        output_dir = config['subdirs']['fractal_outputdir']
+    )
     fractal_mgr = FractalManager(
         input_dir = config['subdirs']['checkpointdir'], 
         fractal_output_dir = config['subdirs']['fractal_outputdir'], 
@@ -137,6 +141,8 @@ if __name__ == '__main__':
     scheduler.add_job(func=fractal_mgr.compute_histograms, trigger="interval", seconds=30)
     scheduler.add_job(func=fractal_mgr.save_checkpoint, trigger="interval", seconds=30)
     scheduler.add_job(func=fractal_mgr.save_image, trigger="interval", seconds=30)
+    scheduler.add_job(func=fractal_mgr.compute_convergence_graph, trigger="interval", seconds=30)
+
     scheduler.start()
 
     app.run(debug=args.debug, port=8000)
