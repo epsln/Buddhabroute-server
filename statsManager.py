@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from os.path import isfile, join
+from os import listdir
+import json
 import logging
 
 logger = logging.getLogger("__name__")
@@ -21,11 +23,11 @@ class StatsManager():
             self.stats_dict['mse'] = []
         else:
             logger.info(f'Loading stats db @ {db_path},')
-            self.stats_dict = self.load(db_path)
+            self.load()
 
     def load(self):
         with open(self.db_path) as fi:
-            self.stats_dict = json.loads(fi)
+            self.stats_dict = json.load(fi)
 
     def save(self):
         with open(self.db_path, 'w+') as fi:
@@ -40,15 +42,24 @@ class StatsManager():
             self.stats_dict[stat_name] = stats[stat_name]
 
     def increment(self, key, amount = 1):
-        self.stats_dict[stat_name] += amount
+        logger.debug(f'Increasing {key} by {amount}')
+        if key in self.stats_dict:
+            self.stats_dict[key] += amount
+        else:
+            self.stats_dict[key] = amount
 
     def decrement(self, key, amount = 1):
-        self.stats_dict[stat_name] -= amount
+        logger.debug(f'Decreasing {key} by {amount}')
+        if key in self.stats_dict:
+            self.stats_dict[key] -= amount
+        else:
+            self.stats_dict[key] = amount
 
     def compute_graphs(self):
-        path = [join(self.fractal_checkpoint_dir, f) for f in listdir(self.fractal_checkpoint_dir)]
+        paths = [join(self.fractal_checkpoint_dir, f) for f in listdir(self.fractal_checkpoint_dir)]
         if len(paths) < 2:
             logger.info(f'Not enough checkpoints to compute a convergence graph.')
+            return 
 
         old_check = np.load(paths[1])
         new_check = np.load(paths[0])
