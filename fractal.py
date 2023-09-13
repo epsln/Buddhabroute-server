@@ -34,6 +34,8 @@ class FractalManager():
         return np.load(join(self.checkpoint_output_dir, filename))
 
     def save_checkpoint(self):
+        logger.info(f'Renaming last checkpoint: {join(self.fractal_output_dir, "old.npy")}')
+        os.rename(join(self.checkpoint_output_dir, self.checkpoint_filename), "old.npy")
         logger.info(f'Saving last checkpoint: {join(self.fractal_output_dir, self.checkpoint_filename)}')
         return np.save(join(self.checkpoint_output_dir, self.checkpoint_filename), self.last_checkpoint)
 
@@ -53,21 +55,22 @@ class FractalManager():
 
         files = []
         for input_file in filename_list:
+            self.stats_mgr.increment('tot_checkpoints')            
             try:
                 logger.debug(f'opening {input_file}')
                 histo = self._load(input_file)
                 if histo.shape != self.output_size:
                     remove(input_file)
                     logger.info(f'file {input_file} was non compliant')
+                    self.stats_mgr.increment('tot_checkpoints_bad')            
                     continue
-
-                files.append(histo)
             except EmptyDataError:
                 remove(input_file)
                 logger.debug(f'{input_file} is empty !')
-                remove(input_file)
+                self.stats_mgr.increment('tot_checkpoints_bad')            
                 continue
 
+            files.append(histo)
             remove(input_file)
 
         for data in files:
@@ -76,6 +79,7 @@ class FractalManager():
         self.save_image(self.output_filename)
 
     def _compute(self, histogram):
+        self.stats_mgr.increment('tot_num_pts', histogram.sum())
         self.last_checkpoint = np.add(self.last_checkpoint, histogram)
 
     def save_image(self, filename = None):
