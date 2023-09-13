@@ -55,7 +55,6 @@ class FractalManager():
 
         files = []
         for input_file in filename_list:
-            self.stats_mgr.increment('tot_checkpoints')            
             try:
                 logger.debug(f'opening {input_file}')
                 histo = self._load(input_file)
@@ -67,12 +66,12 @@ class FractalManager():
             except EmptyDataError:
                 remove(input_file)
                 logger.debug(f'{input_file} is empty !')
-                self.stats_mgr.increment('tot_checkpoints_bad')            
                 continue
 
             files.append(histo)
             remove(input_file)
 
+        self.stats_mgr.increment('tot_checkpoints', len(files))            
         for data in files:
            self._compute(data)
 
@@ -80,6 +79,7 @@ class FractalManager():
 
     def _compute(self, histogram):
         self.stats_mgr.increment('tot_num_pts', histogram.sum())
+        self.stats_mgr.increment('tot_', histogram.sum())
         self.last_checkpoint = np.add(self.last_checkpoint, histogram)
 
     def save_image(self, filename = None):
