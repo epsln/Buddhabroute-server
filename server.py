@@ -18,6 +18,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 
 from fractal import FractalManager
+from statsManager import StatsManager 
 
 app = Flask(__name__)
 logger = logging.getLogger("__name__")
@@ -126,10 +127,12 @@ if __name__ == '__main__':
         int(config['server']['worker'])
     )
     stats_mgr = StatsManager(
-        db_path = config['db_path'],
-        output_dir = config['subdirs']['fractal_outputdir']
+        db_path = 'db.json',
+        output_dir = config['subdirs']['fractal_outputdir'],
+        fractal_checkpoint_dir = config['subdirs']['checkpoint_outputdir']
     )
     fractal_mgr = FractalManager(
+        stats_mgr = stats_mgr,
         input_dir = config['subdirs']['checkpointdir'], 
         fractal_output_dir = config['subdirs']['fractal_outputdir'], 
         checkpoint_output_dir = config['subdirs']['checkpoint_outputdir'], 
@@ -138,10 +141,14 @@ if __name__ == '__main__':
     last_compute_time = time.time()
 
     scheduler = BackgroundScheduler()
+
     scheduler.add_job(func=fractal_mgr.compute_histograms, trigger="interval", seconds=30)
     scheduler.add_job(func=fractal_mgr.save_checkpoint, trigger="interval", seconds=30)
     scheduler.add_job(func=fractal_mgr.save_image, trigger="interval", seconds=30)
-    scheduler.add_job(func=fractal_mgr.compute_convergence_graph, trigger="interval", seconds=30)
+
+    scheduler.add_job(func=stats_mgr.compute_graphs, trigger="interval", seconds=30)
+    scheduler.add_job(func=stats_mgr.increment, args = ['days_uptime'], trigger="interval", seconds=30)
+    scheduler.add_job(func=stats_mgr.save, trigger="interval", seconds=30)
 
     scheduler.start()
 
