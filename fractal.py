@@ -5,7 +5,7 @@ import pandas as pd
 from pandas.errors import EmptyDataError
 
 import logging
-from os import listdir, mkdir, getcwd, remove
+from os import listdir, mkdir, getcwd, remove, rename
 from os.path import isfile, join
 import time
 
@@ -35,7 +35,7 @@ class FractalManager():
 
     def save_checkpoint(self):
         logger.info(f'Renaming last checkpoint: {join(self.fractal_output_dir, "old.npy")}')
-        os.rename(join(self.checkpoint_output_dir, self.checkpoint_filename), "old.npy")
+        rename(join(self.checkpoint_output_dir, self.checkpoint_filename), "old.npy")
         logger.info(f'Saving last checkpoint: {join(self.fractal_output_dir, self.checkpoint_filename)}')
         return np.save(join(self.checkpoint_output_dir, self.checkpoint_filename), self.last_checkpoint)
 
