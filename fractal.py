@@ -12,7 +12,9 @@ import time
 logger = logging.getLogger("__name__")
 
 class FractalManager():
-    def __init__(self, input_dir, fractal_output_dir, checkpoint_output_dir, output_size, checkpoint_filename = 'last.npy'):
+    def __init__(self, stats_mgr, input_dir, fractal_output_dir, checkpoint_output_dir, output_size, checkpoint_filename = 'last.npy'):
+        #TODO: init from config instead
+        self.stats_mgr = stats_mgr
         self.input_dir = input_dir
         self.checkpoint_output_dir = checkpoint_output_dir
         self.fractal_output_dir = fractal_output_dir
@@ -32,9 +34,6 @@ class FractalManager():
         return np.load(join(self.checkpoint_output_dir, filename))
 
     def save_checkpoint(self):
-        logger.info(f'Saving last checkpoint: {join(self.fractal_output_dir, self.checkpoint_filename)}')
-        return np.save(join(self.checkpoint_output_dir, self.checkpoint_filename), self.last_checkpoint)
-
         logger.info(f'Saving last checkpoint: {join(self.fractal_output_dir, self.checkpoint_filename)}')
         return np.save(join(self.checkpoint_output_dir, self.checkpoint_filename), self.last_checkpoint)
 
