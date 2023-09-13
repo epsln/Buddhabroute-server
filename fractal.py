@@ -61,7 +61,6 @@ class FractalManager():
                 if histo.shape != self.output_size:
                     remove(input_file)
                     logger.info(f'file {input_file} was non compliant')
-                    self.stats_mgr.increment('tot_checkpoints_bad')            
                     continue
             except EmptyDataError:
                 remove(input_file)
@@ -79,7 +78,6 @@ class FractalManager():
 
     def _compute(self, histogram):
         self.stats_mgr.increment('tot_num_pts', histogram.sum())
-        self.stats_mgr.increment('tot_', histogram.sum())
         self.last_checkpoint = np.add(self.last_checkpoint, histogram)
 
     def save_image(self, filename = None):
