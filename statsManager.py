@@ -4,25 +4,31 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
+from os.path import isfile, join
+import logging
+
+logger = logging.getLogger("__name__")
+
 class StatsManager():
     def __init__(self, db_path, output_dir, fractal_checkpoint_dir):
+        self.db_path = db_path 
         self.output_dir = output_dir
         self.fractal_checkpoint_dir = fractal_checkpoint_dir 
         self.stats_dict = {}
 
         if isfile(db_path) is False:
-            logger.info(f'Could not find stats db ! Path: {db_path},')
-            stats_dict['mse'] = []
+            logger.info(f'Could not find stats db ! Path {db_path}. Starting from scratch.')
+            self.stats_dict['mse'] = []
         else:
             logger.info(f'Loading stats db @ {db_path},')
-            stats_dict = self.load(db_path)
+            self.stats_dict = self.load(db_path)
 
-    def load(self, db_path):
-        with open(db_path) as fi:
+    def load(self):
+        with open(self.db_path) as fi:
             self.stats_dict = json.loads(fi)
 
-    def save(self, db_path):
-        with open(db_path, 'w+') as fi:
+    def save(self):
+        with open(self.db_path, 'w+') as fi:
              fi.write(json.dumps(self.stats_dict))
 
     def set_user_stats(self, uuid, stats):
@@ -39,7 +45,7 @@ class StatsManager():
     def decrement(self, key, amount = 1):
         self.stats_dict[stat_name] -= amount
 
-    def compute_convergence_graph(self):
+    def compute_graphs(self):
         path = [join(self.fractal_checkpoint_dir, f) for f in listdir(self.fractal_checkpoint_dir)]
         if len(paths) < 2:
             logger.info(f'Not enough checkpoints to compute a convergence graph.')
