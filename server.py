@@ -147,7 +147,7 @@ if __name__ == '__main__':
     scheduler.add_job(func=fractal_mgr.save_image, trigger="interval", seconds=60 * 60 * 24)
 
     scheduler.add_job(func=stats_mgr.compute_graphs, trigger="interval", seconds=60 * 60 * 24)
-    scheduler.add_job(func=stats_mgr.increment, args = ['days_uptime'], trigger="interval", seconds=60 * 60 * 24)
+    scheduler.add_job(func=stats_mgr.increment, args = ['days_uptime'], trigger="cron", hour = 0)
     scheduler.add_job(func=stats_mgr.save, trigger="interval", seconds=60 * 60)
 
     scheduler.start()
