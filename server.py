@@ -142,13 +142,13 @@ if __name__ == '__main__':
 
     scheduler = BackgroundScheduler()
 
-    scheduler.add_job(func=fractal_mgr.compute_histograms, trigger="interval", seconds=30)
-    scheduler.add_job(func=fractal_mgr.save_checkpoint, trigger="interval", seconds=30)
-    scheduler.add_job(func=fractal_mgr.save_image, trigger="interval", seconds=30)
+    scheduler.add_job(func=fractal_mgr.compute_histograms, trigger="interval", seconds=60 * 60)
+    scheduler.add_job(func=fractal_mgr.save_checkpoint, trigger="interval", seconds=60 * 60)
+    scheduler.add_job(func=fractal_mgr.save_image, trigger="interval", seconds=60 * 60 * 24)
 
-    scheduler.add_job(func=stats_mgr.compute_graphs, trigger="interval", seconds=30)
-    scheduler.add_job(func=stats_mgr.increment, args = ['days_uptime'], trigger="interval", seconds=30)
-    scheduler.add_job(func=stats_mgr.save, trigger="interval", seconds=30)
+    scheduler.add_job(func=stats_mgr.compute_graphs, trigger="interval", seconds=60 * 60 * 24)
+    scheduler.add_job(func=stats_mgr.increment, args = ['days_uptime'], trigger="interval", seconds=60 * 60 * 24)
+    scheduler.add_job(func=stats_mgr.save, trigger="interval", seconds=60 * 60)
 
     scheduler.start()
 
