@@ -33,8 +33,14 @@ class StatsManager():
         for stat_name in stats.keys():
             self.stats_dict[stat_name] = stats[stat_name]
 
+    def increment(self, key, amount = 1):
+        self.stats_dict[stat_name] += amount
+
+    def decrement(self, key, amount = 1):
+        self.stats_dict[stat_name] -= amount
+
     def compute_convergence_graph(self):
-        paths = sorted(Path(self.fractal_checkpoint_dir).iterdir(), key=os.path.getmtime)
+        path = [join(self.fractal_checkpoint_dir, f) for f in listdir(self.fractal_checkpoint_dir)]
         if len(paths) < 2:
             logger.info(f'Not enough checkpoints to compute a convergence graph.')
 
