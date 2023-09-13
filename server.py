@@ -96,8 +96,8 @@ def upload_checkpoint():
 
     #TODO: Change filename + create a saving method in case we need some processing e.g. quarantines
     np.save(join(fractal_mgr.input_dir, str(time.time())), histogram)
-    if data['nickname'] is not "None":
-        username = data['nickname']
+    if request.json['nickname'] is not "None":
+        username = request.json['nickname']
     else:
         username = ""
     return {"message": f"Thanks ! {username} "}
