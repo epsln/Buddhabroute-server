@@ -1,13 +1,13 @@
+import json
 import os
+from os.path import isfile, join
+from os import listdir
 from pathlib import Path
+
+import logging
 
 import matplotlib.pyplot as plt
 import numpy as np
-
-from os.path import isfile, join
-from os import listdir
-import json
-import logging
 
 logger = logging.getLogger("__name__")
 
