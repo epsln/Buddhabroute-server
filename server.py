@@ -82,6 +82,10 @@ def upload_checkpoint():
         logger.debug(f'invalid request : No uuid !')
         return redirect('/', code=303)
 
+    if 'version' in request.json and request.json['version'] != config['version']: #TODO: validate json against a format
+        logger.debug(f'invalid request : wrong version!')
+        return redirect('/', code=303)
+
     # with decompression to go with client side compression
     histogram = np.frombuffer(
         zlib.decompress(
@@ -95,11 +99,13 @@ def upload_checkpoint():
     histogram = np.reshape(histogram, size)
 
     #TODO: Change filename + create a saving method in case we need some processing e.g. quarantines
-    np.save(join(fractal_mgr.input_dir, str(time.time())), histogram)
     if request.json['nickname'] is not "None":
         username = request.json['nickname']
     else:
         username = ""
+    filename = f"{username}_{str(time.time())}"
+    np.save(join(fractal_mgr.input_dir, filename), histogram)
+    logger.debug("Saving histogram @ {join(fractal_mgr.input_dir, filename)}")
     return {"message": f"Thanks ! {username} "}
 
 if __name__ == '__main__':
@@ -141,9 +147,8 @@ if __name__ == '__main__':
     last_compute_time = time.time()
 
     scheduler = BackgroundScheduler()
-
-    scheduler.add_job(func=fractal_mgr.compute_histograms, trigger="interval", seconds=60 * 60)
-    scheduler.add_job(func=fractal_mgr.save_checkpoint, trigger="interval", seconds=60 * 60)
+    scheduler.add_job(func=fractal_mgr.compute_histograms, trigger="interval", seconds=60 * 10)
+    scheduler.add_job(func=fractal_mgr.save_checkpoint, trigger="interval", seconds=60 * 10)
     scheduler.add_job(func=fractal_mgr.save_image, trigger="cron", hour = 0)
     scheduler.add_job(func=fractal_mgr.save_checkpoint,  args = ['old.npy'], trigger="cron", hour = 0)
 
