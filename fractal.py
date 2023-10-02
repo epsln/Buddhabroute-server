@@ -37,7 +37,7 @@ class FractalManager():
         if not filename:
             filename = self.checkpoint_filename
         logger.info(f'Saving last checkpoint: {join(self.checkpoint_output_dir, filename)}')
-        return np.save(join(self.checkpoint_output_dir, self.checkpoint_filename), filename)
+        return np.save(join(self.checkpoint_output_dir, self.filename), self.last_checkpoint)
 
     def smoothing_func(self, val, max_val):
         return np.log(val + 1)/max_val * 255
