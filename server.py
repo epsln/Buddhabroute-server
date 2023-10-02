@@ -82,7 +82,7 @@ def upload_checkpoint():
         logger.debug(f'invalid request : No uuid !')
         return redirect('/', code=303)
 
-    if 'version' in request.json and request.json['version'] != config['version']: #TODO: validate json against a format
+    if 'version' in request.json and request.json['version'] != "1.0a": #TODO: no version hardcoding... 
         logger.debug(f'invalid request : wrong version!')
         return redirect('/', code=303)
 
