@@ -67,13 +67,10 @@ class FractalManager():
                 logger.debug(f'{input_file} is empty !')
                 continue
 
-            files.append(histo)
+            self._compute(histo)
             remove(input_file)
 
         self.stats_mgr.increment('tot_checkpoints', len(files))            
-        for data in files:
-           self._compute(data)
-
         self.save_image(self.output_filename)
 
     def _compute(self, histogram):
