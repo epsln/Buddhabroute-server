@@ -102,7 +102,7 @@ def upload_checkpoint():
     if request.json['nickname'] is not "None":
         username = request.json['nickname']
     else:
-        username = ""
+        username = request.json['uuid'] 
     filename = f"{username}_{str(time.time())}"
     np.save(join(fractal_mgr.input_dir, filename), histogram)
     logger.debug("Saving histogram @ {join(fractal_mgr.input_dir, filename)}")
