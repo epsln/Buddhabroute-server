@@ -82,7 +82,7 @@ def upload_checkpoint():
         logger.debug(f'invalid request : No uuid !')
         return redirect('/', code=303)
 
-    if 'version' in request.json and request.json['version'] != "1.0a": #TODO: no version hardcoding... 
+    if 'version' in request.json and request.json['version'] != "1.0a": #TODO: validate json against a format
         logger.debug(f'invalid request : wrong version!')
         return redirect('/', code=303)
 
@@ -99,7 +99,7 @@ def upload_checkpoint():
     histogram = np.reshape(histogram, size)
 
     #TODO: Change filename + create a saving method in case we need some processing e.g. quarantines
-    if request.json['nickname'] is not "None":
+    if request.json['nickname'] is not None:
         username = request.json['nickname']
     else:
         username = request.json['uuid'] 
@@ -147,7 +147,7 @@ if __name__ == '__main__':
     last_compute_time = time.time()
 
     scheduler = BackgroundScheduler()
-    scheduler.add_job(func=fractal_mgr.compute_histograms, trigger="interval", seconds=60 * 10)
+    scheduler.add_job(func=fractal_mgr.compute_histograms, trigger="interval", seconds=6 * 10)
     scheduler.add_job(func=fractal_mgr.save_checkpoint, trigger="interval", seconds=60 * 10)
     scheduler.add_job(func=fractal_mgr.save_image, trigger="cron", hour = 0)
     scheduler.add_job(func=fractal_mgr.save_checkpoint,  args = ['old.npy'], trigger="cron", hour = 0)

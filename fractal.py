@@ -25,10 +25,10 @@ class FractalManager():
         if not isfile(join(self.checkpoint_output_dir, self.checkpoint_filename)):
             logger.info(f'Could not find last checkpoint {join(self.checkpoint_output_dir, self.checkpoint_filename)},'
                           'starting from scratch !')
-            self.last_checkpoint = np.zeros(output_size)
+            self.last_checkpoint = np.zeros(output_size, dtype = np.float32)
         else:
-            logger.info(f'Loading last checkpoint: {join(self.checkpoint_output_dir, self.checkpoint_filename)}')
-            self.last_checkpoint = self._load(join(self.checkpoint_output_dir, self.checkpoint_filename), dtype = np.float32)
+            logger.info(f'Loading last checkpoint: {self.checkpoint_output_dir} {self.checkpoint_filename}')
+            self.last_checkpoint = self._load(join(self.checkpoint_output_dir, self.checkpoint_filename))
 
     def _load(self, filename):
         return np.load(join(self.checkpoint_output_dir, filename))
@@ -36,8 +36,8 @@ class FractalManager():
     def save_checkpoint(self, filename = None):
         if not filename:
             filename = self.checkpoint_filename
-        logger.info(f'Saving last checkpoint: {join(self.checkpoint_output_dir, filename)}')
-        return np.save(join(self.checkpoint_output_dir, self.filename), self.last_checkpoint)
+        logger.info(f'Saving last checkpoint: {self.checkpoint_output_dir}, {filename}')
+        return np.save(join(self.checkpoint_output_dir, filename), self.last_checkpoint)
 
     def smoothing_func(self, val, max_val):
         return np.log(val + 1)/max_val * 255
@@ -62,7 +62,7 @@ class FractalManager():
                     remove(input_file)
                     logger.info(f'file {input_file} was non compliant')
                     continue
-            except EmptyDataError:
+            except EmptyDataError or FileNotFoundError:
                 remove(input_file)
                 logger.debug(f'{input_file} is empty !')
                 continue
@@ -70,12 +70,12 @@ class FractalManager():
             self._compute(histo)
             remove(input_file)
 
-        self.stats_mgr.increment('tot_checkpoints', len(files))            
+            self.stats_mgr.increment('tot_checkpoints', 1)            
         self.save_image(self.output_filename)
 
     def _compute(self, histogram):
         self.stats_mgr.increment('tot_num_pts', histogram.sum())
-        self.last_checkpoint = np.add(self.last_checkpoint, histogram)
+        self.last_checkpoint = np.add(self.last_checkpoint.astype(float), histogram.astype(float))
 
     def save_image(self, filename = None):
         if not filename:
