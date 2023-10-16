@@ -158,4 +158,4 @@ if __name__ == '__main__':
 
     scheduler.start()
 
-    app.run(debug=args.debug, port=8000)
+    app.run(debug=args.debug, port=8000, use_reloader = False)
