@@ -12,12 +12,13 @@ import time
 logger = logging.getLogger("__name__")
 
 class FractalManager():
-    def __init__(self, stats_mgr, input_dir, fractal_output_dir, checkpoint_output_dir, output_size, checkpoint_filename = 'last.npy'):
+    def __init__(self, stats_mgr, input_dir, fractal_output_dir, checkpoint_output_dir, output_size, fractal_archive_dir, checkpoint_filename = 'last.npy'):
         #TODO: init from config instead
         self.stats_mgr = stats_mgr
         self.input_dir = input_dir
         self.checkpoint_output_dir = checkpoint_output_dir
         self.fractal_output_dir = fractal_output_dir
+        self.fractal_archive_dir = fractal_archive_dir
         self.output_size = output_size
         self.checkpoint_filename = checkpoint_filename
         self.output_filename = "histogram.png"
@@ -80,7 +81,7 @@ class FractalManager():
     def save_image(self, filename = None):
         if not filename:
             filename = f'{str(round(time.time()))}.png'
-        logger.debug(f'Saving output image at {join(self.fractal_output_dir, filename)}')
+        logger.debug(f'Saving output image at {join(self.fractal_archive_dir, filename)}')
         max_val = np.log(np.max(self.last_checkpoint) + 1)
         out_array = self.smoothing_func(self.last_checkpoint, max_val)
         output_img = Image.fromarray(out_array.astype(np.uint8))
