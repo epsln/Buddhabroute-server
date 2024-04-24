@@ -3,4 +3,9 @@
 *.png
 *.csv
 output/*
+static/*
+db.json
+bin/
+share/
+pyenv.cfg
 __pycache__/
