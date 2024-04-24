@@ -86,4 +86,4 @@ class FractalManager():
         out_array = self.smoothing_func(self.last_checkpoint, max_val)
         output_img = Image.fromarray(out_array.astype(np.uint8))
         output_img.convert("L")
-        output_img.save(join(self.fractal_output_dir, filename))
+        output_img.save(join(self.fractal_archive_dir, filename))

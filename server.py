@@ -15,6 +15,7 @@ from flask import Flask, request, redirect, send_file
 from concurrent.futures import ThreadPoolExecutor
 from werkzeug.utils import secure_filename
 from apscheduler.schedulers.background import BackgroundScheduler
+from simplegallery import gallery_build
 
 
 from fractal import FractalManager
