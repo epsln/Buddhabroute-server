@@ -8,8 +8,7 @@ from os.path import join
 from pathlib import Path
 
 import numpy as np
-import base64
-import zlib
+import json
 
 from flask import Flask, request, redirect, send_file
 from concurrent.futures import ThreadPoolExecutor
@@ -82,30 +81,21 @@ def upload_checkpoint():
         logger.debug(f'invalid request : No uuid !')
         return redirect('/', code=303)
 
-    if 'version' in request.json and request.json['version'] != config['version']: #TODO: validate json against a format
+    if 'version' in request.json and request.json['version'] != "1.0a": #TODO: validate json against a format
         logger.debug(f'invalid request : wrong version!')
         return redirect('/', code=303)
 
-    # with decompression to go with client side compression
-    histogram = np.frombuffer(
-        zlib.decompress(
-            base64.b64decode(
-                request.json['histogram']
-            )
-        ),
-        dtype=np.float64
-    )
-    size = (int(request.json['shape'][0]), int(request.json['shape'][1]))
-    histogram = np.reshape(histogram, size)
 
     #TODO: Change filename + create a saving method in case we need some processing e.g. quarantines
-    if request.json['nickname'] is not "None":
+    if request.json['nickname'] is not None:
         username = request.json['nickname']
     else:
-        username = ""
-    filename = f"{username}_{str(time.time())}"
-    np.save(join(fractal_mgr.input_dir, filename), histogram)
-    logger.debug("Saving histogram @ {join(fractal_mgr.input_dir, filename)}")
+        username = request.json['uuid'] 
+
+    filename = f"{username}_{str(time.time())}.json"
+    with open(join(fractal_mgr.input_dir, filename), 'w+') as f:
+        json.dump(request.json, f)
+    logger.debug(f"Saving histogram @ {join(fractal_mgr.input_dir, filename)}")
     return {"message": f"Thanks ! {username} "}
 
 if __name__ == '__main__':
@@ -142,12 +132,12 @@ if __name__ == '__main__':
         input_dir = config['subdirs']['checkpointdir'], 
         fractal_output_dir = config['subdirs']['fractal_outputdir'], 
         checkpoint_output_dir = config['subdirs']['checkpoint_outputdir'], 
-        output_size = (7106, 4960)
+        checkpoint_size = (4, 7106, 4960)
     )
     last_compute_time = time.time()
 
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(func=fractal_mgr.compute_histograms, trigger="interval", seconds=60 * 10)
+    scheduler = BackgroundScheduler({'apscheduler.timezone': 'Europe/Paris'})
+    scheduler.add_job(func=fractal_mgr.compute_histograms, trigger="interval", seconds=60 * 1)
     scheduler.add_job(func=fractal_mgr.save_checkpoint, trigger="interval", seconds=60 * 10)
     scheduler.add_job(func=fractal_mgr.save_image, trigger="cron", hour = 0)
     scheduler.add_job(func=fractal_mgr.save_checkpoint,  args = ['old.npy'], trigger="cron", hour = 0)
@@ -158,4 +148,4 @@ if __name__ == '__main__':
 
     scheduler.start()
 
-    app.run(debug=args.debug, port=8000)
+    app.run(debug=args.debug, port=8000, use_reloader = False, threaded = False, processes = 1)
