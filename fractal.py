@@ -34,7 +34,7 @@ class FractalManager():
             self.last_checkpoint = np.zeros(checkpoint_size)
         else:
             logger.info(f'Loading last checkpoint: {self.checkpoint_output_dir} {self.checkpoint_filename}')
-            self.last_checkpoint = self._load(join(self.checkpoint_output_dir, self.checkpoint_filename))
+            self.last_checkpoint = self._load_checkpoint(join(self.checkpoint_output_dir, self.checkpoint_filename))
 
     def _load(self, filename):
         with open(join(self.checkpoint_output_dir, filename)) as f:
@@ -78,6 +78,10 @@ class FractalManager():
             histogram[2, :, :] = np.reshape(green, size)
             histogram[3, :, :] = np.reshape(blue, size)
         return histogram
+
+    def _load_checkpoint(self, filename):
+        self.last_checkpoint = np.load(filename)
+
 
     def save_checkpoint(self, filename = None):
         if not filename:
