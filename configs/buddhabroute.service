@@ -1,0 +1,13 @@
+[Unit]
+Description=BuddhaBroute app server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=buddhabroute
+WorkingDirectory=/opt/buddhabroute/buddhabroute-server
+ExecStart=/opt/buddhabroute/buddhabroute-server/bin/python server.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
