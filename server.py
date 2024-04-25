@@ -52,11 +52,7 @@ def configure_logger(debug, dryrun=False, log_prefix=None):
 
 def parse_configuration(data_model):
     """Check and parse config file."""
-    #cfg_file = Path.home() / f".{Path(__file__).stem}.cfg"
     cfg_file = 'configs/server.conf'
-    #if not cfg_file.is_file():
-    #    logger.error(f'could not find the config file "{cfg_file}"')
-    #    sys.exit(1)
     raw_config = configparser.ConfigParser()
     raw_config.read(cfg_file)
     config = {section: dict.fromkeys(data_model[section]) for section in data_model}
