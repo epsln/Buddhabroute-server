@@ -17,12 +17,13 @@ import time
 logger = logging.getLogger("__name__")
 
 class FractalManager():
-    def __init__(self, stats_mgr, input_dir, fractal_output_dir, checkpoint_output_dir, checkpoint_size, checkpoint_filename = 'last.npy'):
+    def __init__(self, stats_mgr, input_dir, fractal_output_dir, checkpoint_output_dir, checkpoint_size, fractal_archive_dir, checkpoint_filename = 'last.npy'):
         #TODO: init from config instead
         self.stats_mgr = stats_mgr
         self.input_dir = input_dir
         self.checkpoint_output_dir = checkpoint_output_dir
         self.fractal_output_dir = fractal_output_dir
+        self.fractal_archive_dir = fractal_archive_dir
         self.checkpoint_size = checkpoint_size 
         self.image_size = (checkpoint_size[1], checkpoint_size[2], 3)
         self.checkpoint_filename = checkpoint_filename
@@ -30,19 +31,11 @@ class FractalManager():
         self.archive_filename = "histogram.png"
         if not isfile(join(self.checkpoint_output_dir, self.checkpoint_filename)):
             logger.info(f'Could not find last checkpoint {join(self.checkpoint_output_dir, self.checkpoint_filename)},'
-<<<<<<< HEAD
-                          'starting from stratch !')
-            self.last_checkpoint = np.zeros(checkpoint_size)
-        else:
-            logger.info(f'Loading last checkpoint: {self.checkpoint_output_dir} {self.checkpoint_filename}')
-            self.last_checkpoint = self._load_checkpoint(join(self.checkpoint_output_dir, self.checkpoint_filename))
-=======
                           'starting from scratch !')
             self.last_checkpoint = np.zeros(output_size, dtype = np.float32)
         else:
             logger.info(f'Loading last checkpoint: {self.checkpoint_output_dir} {self.checkpoint_filename}')
             self.last_checkpoint = self._load(join(self.checkpoint_output_dir, self.checkpoint_filename))
->>>>>>> 7502e55f8d4e556da4dcbfc47b22d85115330889
 
     def _load(self, filename):
         with open(join(self.checkpoint_output_dir, filename)) as f:
@@ -152,8 +145,10 @@ class FractalManager():
 
     def save_image(self, filename = None):
         if not filename:
-            filename = f'{str(round(time.time()))}.png'
-        logger.debug(f'Saving output image at {join(self.fractal_output_dir, filename)}')
+            filename = f'{self.fractal_archive_dir}/{str(round(time.time()))}.png'
+        else:
+            filename = f'{self.self.fractal_output_dir}/{filename}'
+        logger.debug(f'Saving output image at {filename}')
 
         out_array = self.smoothing_func() * 255
         logger.debug(f'out_img min: {np.min(out_array[:, :, 0])}' )
@@ -164,4 +159,4 @@ class FractalManager():
         logger.debug(f'out_img max: {np.max(out_array[:, :, 2])}' )
 
         output_img = Image.fromarray(out_array.astype(np.uint8), 'RGB')
-        output_img.save(join(self.fractal_output_dir, filename))
+        output_img.save(filename)

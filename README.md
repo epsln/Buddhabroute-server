@@ -7,6 +7,12 @@ Simply install the dependencies:
 pip install -r requirements.txt
 ```
 
+then, init the gallery directory :
+```
+cd archive
+gallery-init
+```
+
 # Running
 The app is simply a Flask server running on port 5000. Just launch on your machine using:
 ```

@@ -14,6 +14,7 @@ from flask import Flask, request, redirect, send_file
 from concurrent.futures import ThreadPoolExecutor
 from werkzeug.utils import secure_filename
 from apscheduler.schedulers.background import BackgroundScheduler
+from simplegallery import gallery_build
 
 
 from fractal import FractalManager
@@ -128,6 +129,7 @@ if __name__ == '__main__':
         input_dir = config['subdirs']['checkpointdir'], 
         fractal_output_dir = config['subdirs']['fractal_outputdir'], 
         checkpoint_output_dir = config['subdirs']['checkpoint_outputdir'], 
+        fractal_archive_dir = config['subdirs']['archive_dir'],
         checkpoint_size = (4, 7106, 4960)
     )
     last_compute_time = time.time()
@@ -136,6 +138,7 @@ if __name__ == '__main__':
     scheduler.add_job(func=fractal_mgr.compute_histograms, trigger="interval", seconds=60 * 1)
     scheduler.add_job(func=fractal_mgr.save_checkpoint, trigger="interval", seconds=60 * 10)
     scheduler.add_job(func=fractal_mgr.save_image, trigger="cron", hour = 0)
+    scheduler.add_job(func=simple_gallery.main, trigger="cron", hour = 0, minute=15)
     scheduler.add_job(func=fractal_mgr.save_checkpoint,  args = ['old.npy'], trigger="cron", hour = 0)
 
     scheduler.add_job(func=stats_mgr.compute_graphs, trigger="cron", hour = 1)
